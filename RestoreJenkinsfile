@@ -1,0 +1,23 @@
+properties([parameters([string(defaultValue: '', description: 'Please mention the backup name only in the format jenkins-20-03-2021-16-53', name: 'Backup_Directory_Name', trim: false)])])
+pipeline{
+    agent any
+    environment{
+        a = "test"
+    } 
+    stages{
+        stage("Rstore"){
+            steps{
+                sh """#!/bin/bash
+                echo "/var/lib/jenkins_primary_server_backup/${Backup_Directory_Name}"
+                  if [ -d "/var/lib/jenkins_primary_server_backup/${Backup_Directory_Name}" ]
+                    then
+                  echo 'restoring the backup from secondary jenkins to primary master'
+                        rsync -a  /var/lib/jenkins_primary_server_backup/${Backup_Directory_Name}   jenkins@192.168.56.15:/var/lib/jenkins_backup/    
+                  else
+                        echo "entered directory does not exist"
+                  fi         
+                """
+            }
+        }
+    }
+}
